@@ -1,1 +1,12 @@
-[]
+[
+  {
+    "title": "autumn",
+    "description": "A general-purpose Discord moderation bot.",
+    "url": "https://autumn.agne.uk/"
+  },
+  {
+    "title": "string",
+    "description": "The common thread between you and your friends.",
+    "url": "https://github.com/agneswd/string"
+  }
+]
