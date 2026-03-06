@@ -390,6 +390,32 @@ function resetAll() {
     assert("error state visible after non-ok",  error.hidden   === false);
   });
 
+  await asyncSuite("loadProjects — cache-busting query string", async function () {
+    resetAll();
+
+    var capturedUrl = null;
+    global.fetch = function (url) {
+      capturedUrl = url;
+      return Promise.resolve({
+        ok: true,
+        json: function () { return Promise.resolve([]); },
+      });
+    };
+
+    var before = Date.now();
+    await window.Portfolio.loadProjects();
+    var after = Date.now();
+
+    assert("fetch URL starts with data/projects.json",
+      typeof capturedUrl === "string" && capturedUrl.startsWith("data/projects.json"));
+    assert("fetch URL contains ?v= query parameter",
+      typeof capturedUrl === "string" && capturedUrl.indexOf("?v=") !== -1);
+    var qs = capturedUrl && capturedUrl.split("?v=")[1];
+    var ts = qs ? parseInt(qs, 10) : NaN;
+    assert("cache-busting value is a recent timestamp",
+      !isNaN(ts) && ts >= before && ts <= after);
+  });
+
   // ── Summary ──────────────────────────────────────────────────────────────────
 
   const failed = total - passed;

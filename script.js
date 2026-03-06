@@ -180,7 +180,7 @@
     if (loadingEl) loadingEl.hidden = false;
     if (errorEl)   errorEl.hidden   = true;
 
-    return fetch("data/projects.json")
+    return fetch("data/projects.json?v=" + Date.now())
       .then(function (res) {
         if (!res.ok) throw new Error("HTTP " + res.status);
         return res.json();
