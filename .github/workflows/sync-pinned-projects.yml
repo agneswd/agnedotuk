@@ -1,0 +1,46 @@
+name: Sync pinned projects
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 4 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  sync-pinned-projects:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run sync tests
+        run: |
+          node --test scripts/sync-pinned-projects.test.js
+          node test.node.js
+
+      - name: Regenerate pinned project data
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_USER: agneswd
+        run: node scripts/sync-pinned-projects.js
+
+      - name: Commit updated project data
+        run: |
+          if git diff --quiet -- data/projects.json; then
+            echo "No project data changes detected."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/projects.json
+          git commit -m "chore(data): sync pinned projects"
+          git push
