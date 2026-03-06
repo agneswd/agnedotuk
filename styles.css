@@ -76,9 +76,27 @@ main {
   margin-bottom: var(--gap);
 }
 
+/* ── Repos section ────────────────────────────────────────────── */
+.repos-section {
+  margin-top: 3rem;
+  margin-bottom: var(--gap);
+}
+.repos-section .project-grid {
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+.section-heading {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
 .project-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 1px;
   border: 1px solid var(--border);
 }
@@ -141,6 +159,59 @@ main {
   color: var(--accent);
 }
 
+/* ── Language tags (pinned cards only) ────────────────────────── */
+.project-languages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.25rem;
+}
+
+.language-tag {
+  font-family: var(--font-mono);
+  font-size: 0.67rem;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  padding: 0.1rem 0.4rem;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+}
+
+/* Per-language subtle tints — muted palette tuned for the dark theme */
+.language-tag[data-lang="rust"]        { color: #a05a38; border-color: #4a2c18; }
+.language-tag[data-lang="javascript"]  { color: #9a8428; border-color: #443c18; }
+.language-tag[data-lang="typescript"]  { color: #3870a0; border-color: #183448; }
+.language-tag[data-lang="html"]        { color: #a04030; border-color: #4a2018; }
+.language-tag[data-lang="css"]         { color: #5048a0; border-color: #241e48; }
+.language-tag[data-lang="python"]      { color: #389878; border-color: #183c30; }
+.language-tag[data-lang="go"]          { color: #3880a0; border-color: #183848; }
+.language-tag[data-lang="shell"]       { color: #708840; border-color: #303e18; }
+.language-tag[data-lang="ruby"]        { color: #983840; border-color: #441818; }
+.language-tag[data-lang="c"]           { color: #5870a0; border-color: #202e48; }
+.language-tag[data-lang="c++"]         { color: #5870a0; border-color: #202e48; }
+.language-tag[data-lang="java"]        { color: #a06038; border-color: #4a2c18; }
+
+/* ── Compact cards (All my repos) ─────────────────────────── */
+.project-card.project-card--compact {
+  padding: 0.75rem 1rem;
+  gap: 0.25rem;
+}
+
+.project-card.project-card--compact .project-title {
+  font-size: 0.77rem;
+}
+
+.project-card.project-card--compact .project-description {
+  font-size: 0.77rem;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+.project-card.project-card--compact .project-link {
+  padding-top: 0.4rem;
+  font-size: 0.7rem;
+}
+
 /* ── Status lines (loading / empty / error) ─────────────────── */
 .status-line {
   color: var(--text-muted);
@@ -154,6 +225,9 @@ main {
 .site-footer {
   padding-top: 2rem;
   border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .footer-line {
@@ -161,6 +235,22 @@ main {
   font-family: var(--font-mono);
   color: var(--text-muted);
   letter-spacing: 0.04em;
+}
+
+.footer-github {
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  transition: color 0.15s ease;
+}
+
+.footer-github:hover {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.footer-github svg {
+  fill: currentColor;
 }
 
 /* ── Responsive ───────────────────────────────────────────────── */

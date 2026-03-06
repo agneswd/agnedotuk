@@ -97,30 +97,44 @@ function resetFixture() {
   error.id = "error-state";
   error.hidden = true;
 
+  const reposGrid = makeElement("div");
+  reposGrid.id = "repos-grid";
+  reposGrid._attrs.role = "list";
+  reposGrid.innerHTML = "";
+  reposGrid.children = [];
+
+  const reposEmpty = makeElement("p");
+  reposEmpty.id = "repos-empty-state";
+  reposEmpty.hidden = true;
+
   idMap = {
-    "project-grid":  grid,
-    "empty-state":   empty,
-    "loading-state": loading,
-    "error-state":   error,
+    "project-grid":      grid,
+    "empty-state":       empty,
+    "loading-state":     loading,
+    "error-state":       error,
+    "repos-grid":        reposGrid,
+    "repos-empty-state": reposEmpty,
   };
 
-  // patch querySelectorAll on grid to walk children
-  grid.querySelectorAll = function (sel) {
-    return collectByClass(grid, classFromSel(sel));
-  };
-  grid.querySelector = function (sel) {
-    return collectByClass(grid, classFromSel(sel))[0] || null;
-  };
+  // patch querySelectorAll/querySelector on grid elements to walk children
+  [grid, reposGrid].forEach(function (g) {
+    g.querySelectorAll = function (sel) {
+      return collectByClass(g, classFromSel(sel));
+    };
+    g.querySelector = function (sel) {
+      return collectByClass(g, classFromSel(sel))[0] || null;
+    };
+  });
 
-  return { grid, empty, loading, error };
+  return { grid, empty, loading, error, reposGrid, reposEmpty };
 }
 
 // Provide a default fetch stub so init()'s loadProjects() call during eval
-// resolves silently (returns empty array).
+// resolves silently (returns empty payload).
 global.fetch = function () {
   return Promise.resolve({
     ok: true,
-    json: function () { return Promise.resolve([]); },
+    json: function () { return Promise.resolve({ pinned: [], repositories: [] }); },
   });
 };
 
@@ -137,7 +151,7 @@ const src  = fs.readFileSync(path.join(__dirname, "script.js"), "utf8");
 // eslint-disable-next-line no-eval
 eval(src);
 
-const { isValidProject, buildCard, renderProjects, safeUrl } = global.Portfolio;
+const { isValidProject, buildCard, renderProjects, renderAllRepos, safeUrl } = global.Portfolio;
 
 // ── Micro test runner ───────────────────────────────────────────────────────
 
@@ -228,6 +242,53 @@ suite("buildCard — no url", function () {
     card.querySelector(".project-link") === null);
 });
 
+suite("buildCard — language tags (pinned)", function () {
+  const card = buildCard(
+    { title: "p", description: "d", url: "", languages: ["Rust", "HTML"] },
+    { showLanguages: true }
+  );
+  const langsEl = card.querySelector(".project-languages");
+  assert("renders .project-languages when showLanguages:true",
+    langsEl !== null);
+  const tags = card.querySelectorAll(".language-tag");
+  assertEqual("renders one tag per language", tags.length, 2);
+  assert("first tag text is Rust",  tags[0] ? tags[0].textContent === "Rust" : false);
+  assert("second tag text is HTML", tags[1] ? tags[1].textContent === "HTML" : false);
+});
+
+suite("buildCard — language tag data-lang attribute", function () {
+  const card = buildCard(
+    { title: "p", description: "d", url: "", languages: ["Rust", "TypeScript", "HTML"] },
+    { showLanguages: true }
+  );
+  const tags = card.querySelectorAll(".language-tag");
+  assertEqual("Rust tag has data-lang=rust",
+    tags[0] ? tags[0].getAttribute("data-lang") : null, "rust");
+  assertEqual("TypeScript tag has data-lang=typescript",
+    tags[1] ? tags[1].getAttribute("data-lang") : null, "typescript");
+  assertEqual("HTML tag has data-lang=html",
+    tags[2] ? tags[2].getAttribute("data-lang") : null, "html");
+  // text content is the original casing
+  assert("Rust tag text content preserves original casing",
+    tags[0] ? tags[0].textContent === "Rust" : false);
+});
+
+suite("buildCard — no language tags by default", function () {
+  const card = buildCard(
+    { title: "p", description: "d", url: "", languages: ["Rust"] }
+  );
+  assert("no .project-languages without showLanguages option",
+    card.querySelector(".project-languages") === null);
+});
+
+suite("buildCard — compact variant", function () {
+  const card = buildCard({ title: "r", description: "d", url: "" }, { compact: true });
+  assert("adds project-card--compact class when compact:true",
+    card.className.split(" ").includes("project-card--compact"));
+  assert("still has project-card base class",
+    card.className.split(" ").includes("project-card"));
+});
+
 suite("renderProjects — grid population", function () {
   let { grid, empty } = resetFixture();
 
@@ -299,6 +360,49 @@ suite("renderProjects — skips invalid items", function () {
   assertEqual("renders only the 2 valid cards", grid.querySelectorAll(".project-card").length, 2);
 });
 
+suite("renderAllRepos — grid population", function () {
+  let { reposGrid, reposEmpty } = resetFixture();
+
+  renderAllRepos([
+    { title: "repo-a", description: "da", url: "" },
+    { title: "repo-b", description: "db", url: "https://b.com" },
+    { title: "repo-c", description: "dc", url: "https://c.com" },
+  ]);
+  assertEqual("renders exactly 3 repo cards",              reposGrid.querySelectorAll(".project-card").length, 3);
+  assert("repos empty state hidden when repos present",    reposEmpty.hidden === true);
+
+  // Re-render clears old content
+  ({ reposGrid, reposEmpty } = resetFixture());
+  renderAllRepos([{ title: "only one", description: "d", url: "" }]);
+  renderAllRepos([{ title: "only one", description: "d", url: "" }]);
+  assertEqual("clears old cards on re-render",             reposGrid.querySelectorAll(".project-card").length, 1);
+
+  // Empty array
+  ({ reposGrid, reposEmpty } = resetFixture());
+  renderAllRepos([]);
+  assertEqual("no cards for empty repos array",            reposGrid.querySelectorAll(".project-card").length, 0);
+  assert("repos empty state visible for empty array",      reposEmpty.hidden === false);
+
+  // null input
+  ({ reposGrid, reposEmpty } = resetFixture());
+  renderAllRepos(null);
+  assert("repos empty state visible for null input",       reposEmpty.hidden === false);
+});
+
+suite("renderAllRepos — skips invalid items", function () {
+  const { reposGrid } = resetFixture();
+
+  renderAllRepos([
+    { title: "valid",       description: "d",  url: "" },
+    null,
+    { title: "",            description: "d",  url: "" },
+    "bad",
+    { title: "also valid",  description: "d2", url: "" },
+  ]);
+
+  assertEqual("renders only the 2 valid repo cards", reposGrid.querySelectorAll(".project-card").length, 2);
+});
+
 
 // ── Async suite runner ────────────────────────────────────────────────────────
 
@@ -318,50 +422,75 @@ function resetAll() {
 (async function () {
 
   await asyncSuite("loadProjects — populated data", async function () {
-    const { grid, empty, loading, error } = resetAll();
+    const { grid, empty, loading, error, reposGrid, reposEmpty } = resetAll();
 
     global.fetch = function () {
       return Promise.resolve({
         ok: true,
         json: function () {
-          return Promise.resolve([
-            { title: "alpha", description: "desc a", url: "https://alpha.com" },
-            { title: "beta",  description: "desc b", url: "" },
-          ]);
+          return Promise.resolve({
+            pinned: [
+              { title: "alpha", description: "desc a", url: "https://alpha.com", languages: ["Rust"] },
+              { title: "beta",  description: "desc b", url: "", languages: ["TypeScript", "CSS"] },
+            ],
+            repositories: [
+              { title: "gamma",   description: "desc c", url: "https://gamma.com" },
+              { title: "delta",   description: "desc d", url: "" },
+              { title: "epsilon", description: "desc e", url: "https://epsilon.com" },
+            ],
+          });
         },
       });
     };
 
     await window.Portfolio.loadProjects();
 
-    assertEqual("renders 2 cards from JSON",
+    assertEqual("renders 2 pinned cards from JSON",
       grid.querySelectorAll(".project-card").length, 2);
+    assertEqual("renders 3 repo cards from JSON",
+      reposGrid.querySelectorAll(".project-card").length, 3);
     assert("loading state hidden after success", loading.hidden === true);
     assert("error state hidden after success",   error.hidden   === true);
-    assert("empty state hidden after success",   empty.hidden   === true);
+    assert("pinned empty state hidden after success",   empty.hidden   === true);
+    assert("repos empty state hidden after success",    reposEmpty.hidden === true);
+
+    const pinnedCards = grid.querySelectorAll(".project-card");
+    assert("first pinned card has .project-languages",
+      pinnedCards[0] ? pinnedCards[0].querySelector(".project-languages") !== null : false);
+    const firstTags = pinnedCards[0] ? pinnedCards[0].querySelectorAll(".language-tag") : [];
+    assertEqual("first pinned card has 1 language tag", firstTags.length, 1);
+    assert("first pinned card language tag text is Rust",
+      firstTags[0] ? firstTags[0].textContent === "Rust" : false);
+
+    const repoPinnedCards = reposGrid.querySelectorAll(".project-card");
+    assert("repo cards have compact class",
+      repoPinnedCards[0] ? repoPinnedCards[0].className.split(" ").includes("project-card--compact") : false);
   });
 
   await asyncSuite("loadProjects — empty data", async function () {
-    const { grid, empty, loading, error } = resetAll();
+    const { grid, empty, loading, error, reposGrid, reposEmpty } = resetAll();
 
     global.fetch = function () {
       return Promise.resolve({
         ok: true,
-        json: function () { return Promise.resolve([]); },
+        json: function () { return Promise.resolve({ pinned: [], repositories: [] }); },
       });
     };
 
     await window.Portfolio.loadProjects();
 
-    assertEqual("renders 0 cards for empty JSON",
+    assertEqual("renders 0 pinned cards for empty JSON",
       grid.querySelectorAll(".project-card").length, 0);
-    assert("loading state hidden after empty",        loading.hidden === true);
-    assert("empty state visible for empty JSON",      empty.hidden   === false);
-    assert("error state hidden after empty response", error.hidden   === true);
+    assertEqual("renders 0 repo cards for empty JSON",
+      reposGrid.querySelectorAll(".project-card").length, 0);
+    assert("loading state hidden after empty",             loading.hidden === true);
+    assert("pinned empty state visible for empty JSON",    empty.hidden   === false);
+    assert("repos empty state visible for empty JSON",     reposEmpty.hidden === false);
+    assert("error state hidden after empty response",      error.hidden   === true);
   });
 
   await asyncSuite("loadProjects — fetch failure (network error)", async function () {
-    const { grid, empty, loading, error } = resetAll();
+    const { grid, empty, loading, error, reposGrid } = resetAll();
 
     global.fetch = function () {
       return Promise.reject(new Error("network error"));
@@ -369,14 +498,16 @@ function resetAll() {
 
     await window.Portfolio.loadProjects();
 
-    assertEqual("renders 0 cards on network failure",
+    assertEqual("renders 0 pinned cards on network failure",
       grid.querySelectorAll(".project-card").length, 0);
+    assertEqual("renders 0 repo cards on network failure",
+      reposGrid.querySelectorAll(".project-card").length, 0);
     assert("loading state hidden after failure", loading.hidden === true);
     assert("error state visible after failure",  error.hidden   === false);
   });
 
   await asyncSuite("loadProjects — non-ok HTTP response", async function () {
-    const { grid, empty, loading, error } = resetAll();
+    const { grid, empty, loading, error, reposGrid } = resetAll();
 
     global.fetch = function () {
       return Promise.resolve({ ok: false, status: 404 });
@@ -384,8 +515,10 @@ function resetAll() {
 
     await window.Portfolio.loadProjects();
 
-    assertEqual("renders 0 cards on 404",
+    assertEqual("renders 0 pinned cards on 404",
       grid.querySelectorAll(".project-card").length, 0);
+    assertEqual("renders 0 repo cards on 404",
+      reposGrid.querySelectorAll(".project-card").length, 0);
     assert("loading state hidden after non-ok", loading.hidden === true);
     assert("error state visible after non-ok",  error.hidden   === false);
   });

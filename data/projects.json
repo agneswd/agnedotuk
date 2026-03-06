@@ -1,17 +1,53 @@
-[
-  {
-    "title": "autumn",
-    "description": "A general-purpose Discord moderation bot.",
-    "url": "https://autumn.agne.uk/"
-  },
-  {
-    "title": "string",
-    "description": "The common thread between you and your friends.",
-    "url": "https://github.com/agneswd/string"
-  },
-  {
-    "title": "agnedotuk",
-    "description": "Simple dynamically updating projects page.",
-    "url": "http://projects.agne.uk/"
-  }
-]
+{
+  "pinned": [
+    {
+      "title": "autumn",
+      "description": "A general-purpose Discord moderation bot.",
+      "url": "https://autumn.agne.uk/",
+      "languages": [
+        "Rust",
+        "JavaScript"
+      ]
+    },
+    {
+      "title": "string",
+      "description": "The common thread between you and your friends.",
+      "url": "https://github.com/agneswd/string",
+      "languages": [
+        "TypeScript",
+        "Rust"
+      ]
+    },
+    {
+      "title": "agnedotuk",
+      "description": "Simple dynamically updating projects page.",
+      "url": "http://projects.agne.uk/",
+      "languages": [
+        "JavaScript",
+        "HTML"
+      ]
+    }
+  ],
+  "repositories": [
+    {
+      "title": "izumi",
+      "description": "a python discord moderation and chatbot (gemini api) with minigames",
+      "url": "https://github.com/agneswd/izumi"
+    },
+    {
+      "title": "osu-fortune",
+      "description": "Webpage",
+      "url": "https://agne9.github.io/osu-fortune/"
+    },
+    {
+      "title": "rusty-twilight",
+      "description": "Discord bot made with rust and twilight-rs.",
+      "url": "https://github.com/agneswd/rusty-twilight"
+    },
+    {
+      "title": "ansible-test",
+      "description": "",
+      "url": "https://github.com/agneswd/ansible-test"
+    }
+  ]
+}

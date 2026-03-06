@@ -3,12 +3,15 @@
  *
  * Public API:
  *   renderProjects(projects)
- *     @param {Array<{title: string, description: string, url: string}>} projects
- *     Renders project cards into #project-grid.
+ *     @param {Array<{title: string, description: string, url: string, languages?: string[]}>} projects
+ *     Renders pinned project cards (with language tags) into #project-grid.
  *     Validates each entry and skips malformed objects (logs a warning).
  *
- * The function is exported on window.Portfolio for testability and future
- * integration. Phase 2 will call renderProjects() with live JSON data.
+ *   renderAllRepos(repos)
+ *     @param {Array<{title: string, description: string, url: string}>} repos
+ *     Renders compact repo cards into #repos-grid.
+ *
+ * The functions are exported on window.Portfolio for testability.
  */
 
 (function () {
@@ -66,12 +69,18 @@
 
   /**
    * Builds a single project card element.
-   * @param {{title: string, description: string, url: string}} project
+   * @param {{title: string, description: string, url: string, languages?: string[]}} project
+   * @param {{ showLanguages?: boolean, compact?: boolean }} [options]
    * @returns {HTMLElement}
    */
-  function buildCard(project) {
+  function buildCard(project, options) {
+    var opts = options || {};
+
     const card = document.createElement("article");
     card.className = "project-card";
+    if (opts.compact) {
+      card.classList.add("project-card--compact");
+    }
     card.setAttribute("role", "listitem");
 
     // Only allow http/https URLs; everything else is treated as absent.
@@ -95,6 +104,24 @@
     descEl.className = "project-description";
     descEl.textContent = project.description;
 
+    // Language tags — only for pinned cards when opted in
+    var langsEl = null;
+    if (opts.showLanguages &&
+        Array.isArray(project.languages) &&
+        project.languages.length > 0) {
+      langsEl = document.createElement("div");
+      langsEl.className = "project-languages";
+      project.languages.forEach(function (lang) {
+        if (typeof lang === "string" && lang.trim() !== "") {
+          const tag = document.createElement("span");
+          tag.className = "language-tag";
+          tag.setAttribute("data-lang", lang.trim().toLowerCase());
+          tag.textContent = lang.trim();
+          langsEl.appendChild(tag);
+        }
+      });
+    }
+
     const linkEl = document.createElement("div");
     linkEl.className = "project-link";
 
@@ -115,6 +142,7 @@
 
     card.appendChild(titleEl);
     card.appendChild(descEl);
+    if (langsEl) card.appendChild(langsEl);
     if (url) card.appendChild(linkEl);
 
     return card;
@@ -123,47 +151,66 @@
   // ── Public rendering contract ────────────────────────────────────────────
 
   /**
-   * Renders an array of project objects into the page's project grid.
-   * Accepts only objects with shape { title, description, url }.
+   * Generic grid-renderer: renders an array of project objects into a target
+   * grid element, managing an optional empty-state element.
    * Malformed entries are skipped with a console warning.
    *
-   * @param {Array<{title: string, description: string, url: string}>} projects
+   * @param {string} gridId           - id of the target grid container
+   * @param {string} emptyId          - id of the empty-state element
+   * @param {string} label            - function label used in warning messages
+   * @param {Array<{title: string, description: string, url: string}>} items
+   * @param {{ showLanguages?: boolean, compact?: boolean }} [cardOptions]
    */
-  function renderProjects(projects) {
-    const grid = document.getElementById("project-grid");
-    const emptyState = document.getElementById("empty-state");
+  function renderCardGrid(gridId, emptyId, label, items, cardOptions) {
+    var grid       = document.getElementById(gridId);
+    var emptyState = document.getElementById(emptyId);
 
     if (!grid) {
-      console.error("renderProjects: #project-grid element not found.");
+      console.error(label + ": #" + gridId + " element not found.");
       return;
     }
 
-    // Clear any existing content
     grid.innerHTML = "";
 
-    if (!Array.isArray(projects) || projects.length === 0) {
+    if (!Array.isArray(items) || items.length === 0) {
       if (emptyState) emptyState.hidden = false;
       return;
     }
 
     if (emptyState) emptyState.hidden = true;
 
-    let rendered = 0;
-    projects.forEach(function (p, i) {
+    var rendered = 0;
+    items.forEach(function (p, i) {
       if (!isValidProject(p)) {
         console.warn(
-          "renderProjects: skipping item at index " + i + " — invalid shape.",
+          label + ": skipping item at index " + i + " — invalid shape.",
           p
         );
         return;
       }
-      grid.appendChild(buildCard(p));
+      grid.appendChild(buildCard(p, cardOptions));
       rendered++;
     });
 
     if (rendered === 0 && emptyState) {
       emptyState.hidden = false;
     }
+  }
+
+  /**
+   * Renders pinned project cards (with language tags) into #project-grid.
+   * @param {Array<{title: string, description: string, url: string, languages?: string[]}>} projects
+   */
+  function renderProjects(projects) {
+    renderCardGrid("project-grid", "empty-state", "renderProjects", projects, { showLanguages: true });
+  }
+
+  /**
+   * Renders compact all-repos cards into #repos-grid.
+   * @param {Array<{title: string, description: string, url: string}>} repos
+   */
+  function renderAllRepos(repos) {
+    renderCardGrid("repos-grid", "repos-empty-state", "renderAllRepos", repos, { compact: true });
   }
 
   // ── Initialisation ────────────────────────────────────────────────────────
@@ -185,9 +232,12 @@
         if (!res.ok) throw new Error("HTTP " + res.status);
         return res.json();
       })
-      .then(function (projects) {
+      .then(function (data) {
         if (loadingEl) loadingEl.hidden = true;
-        renderProjects(projects);
+        var pinned       = Array.isArray(data && data.pinned)        ? data.pinned        : [];
+        var repositories = Array.isArray(data && data.repositories)  ? data.repositories  : [];
+        renderProjects(pinned);
+        renderAllRepos(repositories);
       })
       .catch(function (err) {
         if (loadingEl) loadingEl.hidden = true;
@@ -208,6 +258,7 @@
 
   window.Portfolio = {
     renderProjects: renderProjects,
+    renderAllRepos: renderAllRepos,   // exposed for testing
     loadProjects: loadProjects,       // exposed for testing
     isValidProject: isValidProject,   // exposed for test.html
     buildCard: buildCard,             // exposed for test.html
