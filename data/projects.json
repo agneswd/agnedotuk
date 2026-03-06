@@ -8,5 +8,10 @@
     "title": "string",
     "description": "The common thread between you and your friends.",
     "url": "https://github.com/agneswd/string"
+  },
+  {
+    "title": "agnedotuk",
+    "description": "Simple dynamically updating projects page.",
+    "url": "http://projects.agne.uk/"
   }
 ]
