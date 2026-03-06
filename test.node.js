@@ -89,7 +89,20 @@ function resetFixture() {
   empty.id = "empty-state";
   empty.hidden = true;
 
-  idMap = { "project-grid": grid, "empty-state": empty };
+  const loading = makeElement("p");
+  loading.id = "loading-state";
+  loading.hidden = false;
+
+  const error = makeElement("p");
+  error.id = "error-state";
+  error.hidden = true;
+
+  idMap = {
+    "project-grid":  grid,
+    "empty-state":   empty,
+    "loading-state": loading,
+    "error-state":   error,
+  };
 
   // patch querySelectorAll on grid to walk children
   grid.querySelectorAll = function (sel) {
@@ -99,10 +112,19 @@ function resetFixture() {
     return collectByClass(grid, classFromSel(sel))[0] || null;
   };
 
-  return { grid, empty };
+  return { grid, empty, loading, error };
 }
 
-// Pre-populate fixture so init()'s seed renderProjects() call doesn't warn
+// Provide a default fetch stub so init()'s loadProjects() call during eval
+// resolves silently (returns empty array).
+global.fetch = function () {
+  return Promise.resolve({
+    ok: true,
+    json: function () { return Promise.resolve([]); },
+  });
+};
+
+// Pre-populate fixture so init()'s loadProjects() call has the necessary DOM
 resetFixture();
 // Footer year element (used by init())
 idMap["footer-year"] = makeElement("span");
@@ -277,15 +299,107 @@ suite("renderProjects — skips invalid items", function () {
   assertEqual("renders only the 2 valid cards", grid.querySelectorAll(".project-card").length, 2);
 });
 
-// ── Summary ─────────────────────────────────────────────────────────────────
 
-const failed = total - passed;
-console.log("\n" + "─".repeat(50));
-if (failed === 0) {
-  console.log("\x1b[32m" + passed + " / " + total + " tests passed\x1b[0m");
-} else {
-  console.log("\x1b[31m" + passed + " / " + total + " passed — " + failed + " FAILED\x1b[0m");
-  failures.forEach(function (f) { console.log("  \x1b[31m✗\x1b[0m  " + f); });
+// ── Async suite runner ────────────────────────────────────────────────────────
+
+async function asyncSuite(name, fn) {
+  console.log("\n\x1b[2m" + name + "\x1b[0m");
+  await fn();
 }
 
-process.exit(failed > 0 ? 1 : 0);
+function resetAll() {
+  const result = resetFixture();
+  idMap["footer-year"] = makeElement("span");
+  return result;
+}
+
+// ── Async test suites (loadProjects / fetch states) ───────────────────────────
+
+(async function () {
+
+  await asyncSuite("loadProjects — populated data", async function () {
+    const { grid, empty, loading, error } = resetAll();
+
+    global.fetch = function () {
+      return Promise.resolve({
+        ok: true,
+        json: function () {
+          return Promise.resolve([
+            { title: "alpha", description: "desc a", url: "https://alpha.com" },
+            { title: "beta",  description: "desc b", url: "" },
+          ]);
+        },
+      });
+    };
+
+    await window.Portfolio.loadProjects();
+
+    assertEqual("renders 2 cards from JSON",
+      grid.querySelectorAll(".project-card").length, 2);
+    assert("loading state hidden after success", loading.hidden === true);
+    assert("error state hidden after success",   error.hidden   === true);
+    assert("empty state hidden after success",   empty.hidden   === true);
+  });
+
+  await asyncSuite("loadProjects — empty data", async function () {
+    const { grid, empty, loading, error } = resetAll();
+
+    global.fetch = function () {
+      return Promise.resolve({
+        ok: true,
+        json: function () { return Promise.resolve([]); },
+      });
+    };
+
+    await window.Portfolio.loadProjects();
+
+    assertEqual("renders 0 cards for empty JSON",
+      grid.querySelectorAll(".project-card").length, 0);
+    assert("loading state hidden after empty",        loading.hidden === true);
+    assert("empty state visible for empty JSON",      empty.hidden   === false);
+    assert("error state hidden after empty response", error.hidden   === true);
+  });
+
+  await asyncSuite("loadProjects — fetch failure (network error)", async function () {
+    const { grid, empty, loading, error } = resetAll();
+
+    global.fetch = function () {
+      return Promise.reject(new Error("network error"));
+    };
+
+    await window.Portfolio.loadProjects();
+
+    assertEqual("renders 0 cards on network failure",
+      grid.querySelectorAll(".project-card").length, 0);
+    assert("loading state hidden after failure", loading.hidden === true);
+    assert("error state visible after failure",  error.hidden   === false);
+  });
+
+  await asyncSuite("loadProjects — non-ok HTTP response", async function () {
+    const { grid, empty, loading, error } = resetAll();
+
+    global.fetch = function () {
+      return Promise.resolve({ ok: false, status: 404 });
+    };
+
+    await window.Portfolio.loadProjects();
+
+    assertEqual("renders 0 cards on 404",
+      grid.querySelectorAll(".project-card").length, 0);
+    assert("loading state hidden after non-ok", loading.hidden === true);
+    assert("error state visible after non-ok",  error.hidden   === false);
+  });
+
+  // ── Summary ──────────────────────────────────────────────────────────────────
+
+  const failed = total - passed;
+  console.log("\n" + "─".repeat(50));
+  if (failed === 0) {
+    console.log("\x1b[32m" + passed + " / " + total + " tests passed\x1b[0m");
+  } else {
+    console.log("\x1b[31m" + passed + " / " + total + " passed — " + failed + " FAILED\x1b[0m");
+    failures.forEach(function (f) { console.log("  \x1b[31m✗\x1b[0m  " + f); });
+  }
+
+  process.exit(failed > 0 ? 1 : 0);
+})();

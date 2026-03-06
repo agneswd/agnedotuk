@@ -19,7 +19,9 @@
         <div id="project-grid" class="project-grid" role="list">
           <!-- Populated by script.js renderProjects() -->
         </div>
-        <p id="empty-state" class="empty-state" hidden>No projects yet.</p>
+        <p id="loading-state" class="status-line">loading…</p>
+        <p id="empty-state"   class="status-line" hidden>no projects yet.</p>
+        <p id="error-state"   class="status-line" hidden>couldn't load projects — try refreshing.</p>
       </section>
     </main>
 

@@ -168,36 +168,47 @@
 
   // ── Initialisation ────────────────────────────────────────────────────────
 
+  /**
+   * Fetches data/projects.json and calls renderProjects() with the result.
+   * Manages loading, empty, and error states in the DOM.
+   * @returns {Promise<void>}
+   */
+  function loadProjects() {
+    const loadingEl = document.getElementById("loading-state");
+    const errorEl   = document.getElementById("error-state");
+
+    if (loadingEl) loadingEl.hidden = false;
+    if (errorEl)   errorEl.hidden   = true;
+
+    return fetch("data/projects.json")
+      .then(function (res) {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.json();
+      })
+      .then(function (projects) {
+        if (loadingEl) loadingEl.hidden = true;
+        renderProjects(projects);
+      })
+      .catch(function (err) {
+        if (loadingEl) loadingEl.hidden = true;
+        if (errorEl)   errorEl.hidden   = false;
+        console.error("loadProjects: failed to fetch data/projects.json.", err);
+      });
+  }
+
   function init() {
     // Footer year
     const yearEl = document.getElementById("footer-year");
     if (yearEl) yearEl.textContent = new Date().getFullYear();
 
-    // Seed with placeholder data so the grid is visible from day one.
-    // Phase 2 will replace this with a live JSON fetch.
-    renderProjects([
-      {
-        title: "project one",
-        description: "A brief description of what this project does and the technologies involved.",
-        url: "https://github.com/agneswd",
-      },
-      {
-        title: "project two",
-        description: "Another short description. Keep it one or two sentences.",
-        url: "https://github.com/agneswd",
-      },
-      {
-        title: "project three",
-        description: "Placeholder — will be replaced by live data in Phase 2.",
-        url: "",
-      },
-    ]);
+    loadProjects();
   }
 
   // ── Exports ───────────────────────────────────────────────────────────────
 
   window.Portfolio = {
     renderProjects: renderProjects,
+    loadProjects: loadProjects,       // exposed for testing
     isValidProject: isValidProject,   // exposed for test.html
     buildCard: buildCard,             // exposed for test.html
     safeUrl: safeUrl,                 // exposed for test.html
