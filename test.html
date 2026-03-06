@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>portfolio — tests</title>
+  <style>
+    :root { --pass: #4ade80; --fail: #f87171; --bg: #111; --text: #d4d0cb; --muted: #6b6860; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: "SFMono-Regular", Consolas, monospace; font-size: 13px; padding: 2rem 1.5rem; line-height: 1.7; }
+    h1 { font-size: 0.9rem; font-weight: 400; letter-spacing: 0.06em; margin-bottom: 1.5rem; color: var(--muted); }
+    .suite { margin-bottom: 1.5rem; }
+    .suite-name { font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.4rem; }
+    .result { padding: 0.1rem 0; }
+    .pass { color: var(--pass); }
+    .fail { color: var(--fail); }
+    .summary { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #2a2a2a; font-size: 0.82rem; }
+    .summary.all-pass { color: var(--pass); }
+    .summary.has-fail  { color: var(--fail); }
+    /* Hidden test fixture */
+    #fixture { display: none; }
+  </style>
+</head>
+<body>
+  <h1>agneswd / test suite</h1>
+  <div id="output"></div>
+  <div class="summary" id="summary"></div>
+
+  <!-- Hidden DOM fixture used by rendering tests -->
+  <div id="fixture">
+    <div id="project-grid" role="list"></div>
+    <p id="empty-state" hidden></p>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    (function () {
+      "use strict";
+
+      // ── Micro test runner ───────────────────────────────────────────────
+      const results = [];
+
+      function assert(description, condition) {
+        results.push({ description, pass: !!condition });
+      }
+
+      function assertEqual(description, a, b) {
+        const pass = a === b;
+        results.push({
+          description,
+          pass,
+          detail: pass ? null : ("expected " + JSON.stringify(b) + ", got " + JSON.stringify(a)),
+        });
+      }
+
+      function suite(name, fn) {
+        const before = results.length;
+        fn();
+        const suiteResults = results.slice(before);
+        render(name, suiteResults);
+      }
+
+      function render(name, suiteResults) {
+        const out = document.getElementById("output");
+        const div = document.createElement("div");
+        div.className = "suite";
+        div.innerHTML = '<div class="suite-name">' + name + '</div>';
+        suiteResults.forEach(function (r) {
+          const el = document.createElement("div");
+          el.className = "result " + (r.pass ? "pass" : "fail");
+          const icon = r.pass ? "✓" : "✗";
+          el.textContent = icon + "  " + r.description;
+          if (r.detail) {
+            const detail = document.createElement("div");
+            detail.style.paddingLeft = "1.4rem";
+            detail.style.color = "var(--muted)";
+            detail.textContent = r.detail;
+            el.appendChild(detail);
+          }
+          div.appendChild(el);
+        });
+        out.appendChild(div);
+      }
+
+      // ── Tests ───────────────────────────────────────────────────────────
+
+      suite("isValidProject — valid inputs", function () {
+        const v = window.Portfolio.isValidProject;
+
+        assert("accepts fully populated object",
+          v({ title: "foo", description: "bar", url: "https://x.com" }));
+
+        assert("accepts empty description",
+          v({ title: "foo", description: "", url: "" }));
+
+        assert("accepts empty url",
+          v({ title: "foo", description: "desc", url: "" }));
+      });
+
+      suite("isValidProject — invalid inputs", function () {
+        const v = window.Portfolio.isValidProject;
+
+        assert("rejects null",                 !v(null));
+        assert("rejects undefined",            !v(undefined));
+        assert("rejects plain string",         !v("hello"));
+        assert("rejects number",               !v(42));
+        assert("rejects array",                !v([]));
+        assert("rejects missing title",        !v({ description: "d", url: "u" }));
+        assert("rejects empty-string title",   !v({ title: "", description: "d", url: "u" }));
+        assert("rejects whitespace-only title",!v({ title: "   ", description: "d", url: "u" }));
+        assert("rejects numeric title",        !v({ title: 123, description: "d", url: "u" }));
+        assert("rejects missing description",  !v({ title: "t", url: "u" }));
+        assert("rejects missing url",          !v({ title: "t", description: "d" }));
+      });
+
+      suite("buildCard — DOM structure", function () {
+        const b = window.Portfolio.buildCard;
+
+        const card = b({ title: "my project", description: "some desc", url: "https://example.com" });
+
+        assert("returns an element", card instanceof HTMLElement);
+        assertEqual("has article tag", card.tagName, "ARTICLE");
+        assert("has class project-card", card.classList.contains("project-card"));
+        assert("title element exists", card.querySelector(".project-title") !== null);
+        assert("description element exists", card.querySelector(".project-description") !== null);
+        assert("link element exists", card.querySelector(".project-link") !== null);
+        assertEqual("title text content", card.querySelector(".project-title").textContent, "my project");
+        assertEqual("description text content", card.querySelector(".project-description").textContent, "some desc");
+
+        const anchor = card.querySelector(".project-title a");
+        assert("title wraps anchor when url present", anchor !== null);
+        assertEqual("anchor href", anchor && anchor.getAttribute("href"), "https://example.com");
+        assertEqual("anchor rel", anchor && anchor.getAttribute("rel"), "noopener noreferrer");
+      });
+
+      suite("buildCard — no url", function () {
+        const b = window.Portfolio.buildCard;
+        const card = b({ title: "no link", description: "desc", url: "" });
+
+        assert("no anchor in title when url empty",
+          card.querySelector(".project-title a") === null);
+        assert("no .project-link section when url empty",
+          card.querySelector(".project-link") === null);
+      });
+
+      suite("renderProjects — grid population", function () {
+        const r = window.Portfolio.renderProjects;
+        const grid = document.getElementById("project-grid");
+        const empty = document.getElementById("empty-state");
+
+        // Test 1: renders correct number of cards
+        r([
+          { title: "a", description: "da", url: "" },
+          { title: "b", description: "db", url: "https://b.com" },
+        ]);
+        assertEqual("renders exactly 2 cards", grid.querySelectorAll(".project-card").length, 2);
+        assert("empty state hidden when projects present", empty.hidden === true);
+
+        // Test 2: clears previous content on re-render
+        r([{ title: "only one", description: "d", url: "" }]);
+        assertEqual("clears old cards on re-render", grid.querySelectorAll(".project-card").length, 1);
+
+        // Test 3: empty array shows empty state
+        r([]);
+        assertEqual("no cards for empty array", grid.querySelectorAll(".project-card").length, 0);
+        assert("empty state visible for empty array", empty.hidden === false);
+
+        // Test 4: non-array shows empty state
+        grid.innerHTML = "";
+        empty.hidden = true;
+        r(null);
+        assert("empty state visible for null input", empty.hidden === false);
+      });
+
+      suite("renderProjects — skips invalid items", function () {
+        const r = window.Portfolio.renderProjects;
+        const grid = document.getElementById("project-grid");
+
+        r([
+          { title: "valid", description: "d", url: "" },
+          null,
+          { title: "", description: "d", url: "" },
+          "bad",
+          { title: "also valid", description: "d2", url: "" },
+        ]);
+
+        assertEqual("renders only the 2 valid cards", grid.querySelectorAll(".project-card").length, 2);
+      });
+
+      // ── Summary ────────────────────────────────────────────────────────
+      const total  = results.length;
+      const passed = results.filter(function (r) { return r.pass; }).length;
+      const failed = total - passed;
+
+      const summaryEl = document.getElementById("summary");
+      summaryEl.textContent = passed + " / " + total + " tests passed" +
+        (failed > 0 ? " — " + failed + " failed" : "");
+      summaryEl.className = "summary " + (failed > 0 ? "has-fail" : "all-pass");
+
+      // Exit code hint for headless runners (e.g. puppeteer / playwright)
+      window.__TEST_RESULTS__ = { total, passed, failed };
+    })();
+  </script>
+</body>
+</html>

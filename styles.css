@@ -1,0 +1,170 @@
+/* ── Reset & base ─────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg:          #111111;
+  --surface:     #1a1a1a;
+  --border:      #2a2a2a;
+  --text:        #d4d0cb;
+  --text-muted:  #6b6860;
+  --accent:      #c8b8a2;
+  --font-mono:   "SFMono-Regular", "Consolas", "Liberation Mono", monospace;
+  --font-sans:   "Inter", "Helvetica Neue", Arial, sans-serif;
+  --gap:         2rem;
+  --max-width:   860px;
+}
+
+html {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ── Page shell ───────────────────────────────────────────────── */
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 3rem 1.5rem 2rem;
+}
+
+main {
+  flex: 1;
+}
+
+/* ── Header ───────────────────────────────────────────────────── */
+.site-header {
+  margin-bottom: 3.5rem;
+}
+
+.site-name {
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: var(--text);
+}
+
+.site-tagline {
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  text-transform: lowercase;
+}
+
+/* ── Project grid ─────────────────────────────────────────────── */
+.projects-section {
+  margin-bottom: var(--gap);
+}
+
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1px;
+  border: 1px solid var(--border);
+}
+
+/* ── Project card ─────────────────────────────────────────────── */
+.project-card {
+  background: var(--surface);
+  padding: 1.25rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  border: 1px solid transparent;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.project-card:hover {
+  background: var(--bg);
+  border-color: var(--border);
+}
+
+.project-title {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.project-title a {
+  color: inherit;
+}
+.project-title a:hover {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.project-description {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.project-link {
+  margin-top: auto;
+  padding-top: 0.6rem;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  letter-spacing: 0.03em;
+}
+.project-link a:hover {
+  color: var(--accent);
+}
+
+/* ── Empty state ──────────────────────────────────────────────── */
+.empty-state {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-family: var(--font-mono);
+  padding: 1.5rem 0;
+}
+
+/* ── Footer ───────────────────────────────────────────────────── */
+.site-footer {
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+}
+
+.footer-line {
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+
+/* ── Responsive ───────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .project-grid {
+    grid-template-columns: 1fr;
+  }
+}
