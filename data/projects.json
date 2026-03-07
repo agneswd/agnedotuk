@@ -32,22 +32,22 @@
     {
       "title": "izumi",
       "description": "a python discord moderation and chatbot (gemini api) with minigames",
-      "url": "https://github.com/agneswd/izumi"
+      "url": "https://api.github.com/repos/agneswd/izumi"
     },
     {
       "title": "osu-fortune",
       "description": "Webpage",
-      "url": "https://agne9.github.io/osu-fortune/"
+      "url": "https://agneswd.github.io/osu-fortune/"
     },
     {
       "title": "rusty-twilight",
       "description": "Discord bot made with rust and twilight-rs.",
-      "url": "https://github.com/agneswd/rusty-twilight"
+      "url": "https://api.github.com/repos/agneswd/rusty-twilight"
     },
     {
       "title": "ansible-test",
       "description": "",
-      "url": "https://github.com/agneswd/ansible-test"
+      "url": "https://api.github.com/repos/agneswd/ansible-test"
     }
   ]
 }
