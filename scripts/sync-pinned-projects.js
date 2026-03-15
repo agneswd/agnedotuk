@@ -48,10 +48,29 @@ function createGitHubHeaders(token) {
   };
 }
 
+function isGitHubApiUrl(value) {
+  return /^https:\/\/api\.github\.com\//i.test(normalizeString(value));
+}
+
+function selectRepositoryPageUrl(repository) {
+  const htmlUrl = normalizeString(repository && repository.html_url);
+  const url = normalizeString(repository && repository.url);
+
+  if (htmlUrl !== "") {
+    return htmlUrl;
+  }
+
+  if (url !== "" && !isGitHubApiUrl(url)) {
+    return url;
+  }
+
+  return "";
+}
+
 function selectProjectUrl(repository) {
   const homepageUrl = normalizeString(repository && repository.homepageUrl);
   const homepage = normalizeString(repository && repository.homepage);
-  const repositoryUrl = normalizeString(repository && (repository.url || repository.html_url));
+  const repositoryUrl = selectRepositoryPageUrl(repository);
   return homepageUrl || homepage || repositoryUrl;
 }
 
@@ -319,6 +338,8 @@ module.exports = {
   PINNED_LANGUAGE_PERCENT_THRESHOLD,
   normalizeString,
   createGitHubHeaders,
+  isGitHubApiUrl,
+  selectRepositoryPageUrl,
   selectProjectUrl,
   reduceRepository,
   reduceRepositories,

@@ -43,6 +43,16 @@ test("selectProjectUrl supports REST repository fields and prefers homepage", fu
   assert.equal(selectProjectUrl(repository), "https://agneswd.dev/rest-demo");
 });
 
+test("selectProjectUrl prefers REST html_url over API url when homepage is blank", function () {
+  const repository = {
+    homepage: "   ",
+    url: "https://api.github.com/repos/agneswd/rest-demo",
+    html_url: "https://github.com/agneswd/rest-demo",
+  };
+
+  assert.equal(selectProjectUrl(repository), "https://github.com/agneswd/rest-demo");
+});
+
 test("reducePinnedProjects adds only languages above the 15 percent threshold", function () {
   const projects = reducePinnedProjects([
     {
@@ -142,12 +152,13 @@ test("buildProjectsPayload excludes pinned repositories from repositories", func
   });
 });
 
-test("reduceRepositories returns minimal repo objects from REST payloads", function () {
+test("reduceRepositories returns minimal repo objects from REST payloads using public repo URLs", function () {
   const repositories = reduceRepositories([
     {
       name: "string",
       description: "The common thread between you and your friends.",
       homepage: "   ",
+      url: "https://api.github.com/repos/agneswd/string",
       html_url: "https://github.com/agneswd/string",
       language: "TypeScript",
     },
@@ -367,6 +378,7 @@ test("syncPinnedProjects writes pinned languages and excludes pinned repos from 
               name: "string",
               description: "The common thread between you and your friends.",
               homepage: "",
+              url: "https://api.github.com/repos/agneswd/string",
               html_url: "https://github.com/agneswd/string",
               size: 2048,
             },
