@@ -31,12 +31,12 @@
     {
       "title": "TaskSync",
       "description": "Queue your prompts and give more tasks with human-in-the-loop workflows. TaskSync provides three options to integrate feedback loops into your AI-assisted development for VS Code Copilot.",
-      "url": "https://api.github.com/repos/agneswd/TaskSync"
+      "url": "https://github.com/agneswd/TaskSync"
     },
     {
       "title": "izumi",
       "description": "a python discord moderation and chatbot (gemini api) with minigames",
-      "url": "https://api.github.com/repos/agneswd/izumi"
+      "url": "https://github.com/agneswd/izumi"
     },
     {
       "title": "osu-fortune",
@@ -46,12 +46,12 @@
     {
       "title": "rusty-twilight",
       "description": "Discord bot made with rust and twilight-rs.",
-      "url": "https://api.github.com/repos/agneswd/rusty-twilight"
+      "url": "https://github.com/agneswd/rusty-twilight"
     },
     {
       "title": "ansible-test",
       "description": "",
-      "url": "https://api.github.com/repos/agneswd/ansible-test"
+      "url": "https://github.com/agneswd/ansible-test"
     }
   ]
 }
