@@ -10,6 +10,15 @@
       ]
     },
     {
+      "title": "Cofinity",
+      "description": "Maximize your requests.",
+      "url": "https://github.com/agneswd/Cofinity",
+      "languages": [
+        "TypeScript",
+        "CSS"
+      ]
+    },
+    {
       "title": "string",
       "description": "The common thread between you and your friends.",
       "url": "https://github.com/agneswd/string",
@@ -29,11 +38,6 @@
   ],
   "repositories": [
     {
-      "title": "TaskSync",
-      "description": "Queue your prompts and give more tasks with human-in-the-loop workflows. TaskSync provides three options to integrate feedback loops into your AI-assisted development for VS Code Copilot.",
-      "url": "https://github.com/agneswd/TaskSync"
-    },
-    {
       "title": "izumi",
       "description": "a python discord moderation and chatbot (gemini api) with minigames",
       "url": "https://github.com/agneswd/izumi"
@@ -52,11 +56,6 @@
       "title": "ansible-test",
       "description": "",
       "url": "https://github.com/agneswd/ansible-test"
-    },
-    {
-      "title": "Cofinity",
-      "description": "Maximize your requests.",
-      "url": "https://github.com/agneswd/Cofinity"
     }
   ]
 }
