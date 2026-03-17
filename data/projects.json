@@ -52,6 +52,11 @@
       "title": "ansible-test",
       "description": "",
       "url": "https://github.com/agneswd/ansible-test"
+    },
+    {
+      "title": "Cofinity",
+      "description": "Maximize your requests.",
+      "url": "https://github.com/agneswd/Cofinity"
     }
   ]
 }
