@@ -11,7 +11,7 @@
     },
     {
       "title": "Cofinity",
-      "description": "Maximize your requests.",
+      "description": "A VSCode extension for Github Copilot. Maximize your requests.",
       "url": "https://github.com/agneswd/Cofinity",
       "languages": [
         "TypeScript",
