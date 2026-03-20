@@ -56,6 +56,11 @@
       "title": "ansible-test",
       "description": "",
       "url": "https://github.com/agneswd/ansible-test"
+    },
+    {
+      "title": "dms-voxtype-activity-overlay",
+      "description": "Plugin for DMS. Displays a live microphone activity overlay while VoxType is recording.",
+      "url": "https://github.com/agneswd/dms-voxtype-activity-overlay"
     }
   ]
 }
