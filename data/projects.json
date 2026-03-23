@@ -19,6 +19,14 @@
       ]
     },
     {
+      "title": "scraps",
+      "description": "Leftover, pantry, recipe + shopping list webapp with AI features.",
+      "url": "https://github.com/agneswd/scraps",
+      "languages": [
+        "TypeScript"
+      ]
+    },
+    {
       "title": "string",
       "description": "The common thread between you and your friends.",
       "url": "https://github.com/agneswd/string",
@@ -33,6 +41,14 @@
       "languages": [
         "JavaScript",
         "HTML"
+      ]
+    },
+    {
+      "title": "dms-voxtype-activity-overlay",
+      "description": "Plugin for DMS. Displays a live microphone activity overlay while VoxType is recording.",
+      "url": "https://github.com/agneswd/dms-voxtype-activity-overlay",
+      "languages": [
+        "QML"
       ]
     }
   ],
@@ -56,11 +72,6 @@
       "title": "ansible-test",
       "description": "",
       "url": "https://github.com/agneswd/ansible-test"
-    },
-    {
-      "title": "dms-voxtype-activity-overlay",
-      "description": "Plugin for DMS. Displays a live microphone activity overlay while VoxType is recording.",
-      "url": "https://github.com/agneswd/dms-voxtype-activity-overlay"
     }
   ]
 }
