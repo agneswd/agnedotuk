@@ -57,6 +57,11 @@
       "url": "https://github.com/agneswd/rusty-twilight"
     },
     {
+      "title": "dms-clipshare",
+      "description": "Dank Material Shell screen recording and sharing plugin",
+      "url": "https://github.com/agneswd/dms-clipshare"
+    },
+    {
       "title": "dms-voxtype-activity-overlay",
       "description": "DMS daemon plugin: live microphone activity overlay while VoxType is recording",
       "url": "https://github.com/agneswd/dms-voxtype-activity-overlay"
