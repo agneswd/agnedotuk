@@ -32,6 +32,11 @@
       "url": "https://github.com/agneswd/Tidverk"
     },
     {
+      "title": "Dagsverk",
+      "description": "Offline-first desktop timesheet, time balance, salary, and payroll reporting app",
+      "url": "https://github.com/agneswd/Dagsverk"
+    },
+    {
       "title": "autumn",
       "description": "A general-purpose Discord moderation bot.",
       "url": "https://autumn.agne.uk/"
