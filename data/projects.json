@@ -12,6 +12,11 @@
   ],
   "repositories": [
     {
+      "title": "Dagsverk",
+      "description": "Offline-first desktop timesheet, time balance, salary, and payroll reporting app",
+      "url": "https://github.com/agneswd/Dagsverk"
+    },
+    {
       "title": "dms-plugin-registry",
       "description": "Official and Third Party Plugins & Themes for DankMaterialShell",
       "url": "https://plugins.danklinux.com"
@@ -30,11 +35,6 @@
       "title": "Tidverk",
       "description": "",
       "url": "https://github.com/agneswd/Tidverk"
-    },
-    {
-      "title": "Dagsverk",
-      "description": "Offline-first desktop timesheet, time balance, salary, and payroll reporting app",
-      "url": "https://github.com/agneswd/Dagsverk"
     },
     {
       "title": "autumn",
