@@ -37,6 +37,11 @@
       "url": "https://github.com/agneswd/Tidverk"
     },
     {
+      "title": "rymd",
+      "description": "A calm disk usage visualizer built with GPUI",
+      "url": "https://github.com/agneswd/rymd"
+    },
+    {
       "title": "autumn",
       "description": "A general-purpose Discord moderation bot.",
       "url": "https://autumn.agne.uk/"
