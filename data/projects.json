@@ -52,14 +52,14 @@
       "url": "https://github.com/agneswd/scraps"
     },
     {
-      "title": "osu-fortune",
-      "description": "Webpage",
-      "url": "https://agneswd.github.io/osu-fortune/"
-    },
-    {
       "title": "dms-ai-quotas",
       "description": "Codex, OpenCode, Antigravity, DeepSeek, and SuperGrok plan quotas for DankMaterialShell",
       "url": "https://github.com/agneswd/dms-ai-quotas"
+    },
+    {
+      "title": "osu-fortune",
+      "description": "Webpage",
+      "url": "https://agneswd.github.io/osu-fortune/"
     },
     {
       "title": "rusty-twilight",
