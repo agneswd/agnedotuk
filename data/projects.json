@@ -8,19 +8,44 @@
         "JavaScript",
         "HTML"
       ]
-    }
-  ],
-  "repositories": [
-    {
-      "title": "Dagsverk",
-      "description": "Offline-first desktop timesheet, time balance, salary, and payroll reporting app",
-      "url": "https://github.com/agneswd/Dagsverk"
     },
     {
       "title": "osu-replay-studio",
       "description": "Render osu! replays with skins, overlays, score animations, and thumbnails.",
-      "url": "https://github.com/agneswd/osu-replay-studio"
+      "url": "https://github.com/agneswd/osu-replay-studio",
+      "languages": [
+        "TypeScript"
+      ]
     },
+    {
+      "title": "Dagsverk",
+      "description": "Offline-first desktop timesheet, time balance, salary, and payroll reporting app",
+      "url": "https://github.com/agneswd/Dagsverk",
+      "languages": [
+        "TypeScript",
+        "HTML"
+      ]
+    },
+    {
+      "title": "dms-ai-quotas",
+      "description": "Codex, OpenCode, Antigravity, DeepSeek, and SuperGrok plan quotas for DankMaterialShell",
+      "url": "https://github.com/agneswd/dms-ai-quotas",
+      "languages": [
+        "QML",
+        "Shell"
+      ]
+    },
+    {
+      "title": "dms-voxtype-activity-overlay",
+      "description": "DMS daemon plugin: live microphone activity overlay while VoxType is recording",
+      "url": "https://github.com/agneswd/dms-voxtype-activity-overlay",
+      "languages": [
+        "QML",
+        "Shell"
+      ]
+    }
+  ],
+  "repositories": [
     {
       "title": "dms-plugin-registry",
       "description": "Official and Third Party Plugins & Themes for DankMaterialShell",
@@ -62,11 +87,6 @@
       "url": "https://agneswd.github.io/osu-fortune/"
     },
     {
-      "title": "dms-ai-quotas",
-      "description": "Codex, OpenCode, Antigravity, DeepSeek, and SuperGrok plan quotas for DankMaterialShell",
-      "url": "https://github.com/agneswd/dms-ai-quotas"
-    },
-    {
       "title": "rusty-twilight",
       "description": "Discord bot made with rust and twilight-rs.",
       "url": "https://github.com/agneswd/rusty-twilight"
@@ -75,11 +95,6 @@
       "title": "dms-clipshare",
       "description": "Dank Material Shell screen recording and sharing plugin",
       "url": "https://github.com/agneswd/dms-clipshare"
-    },
-    {
-      "title": "dms-voxtype-activity-overlay",
-      "description": "DMS daemon plugin: live microphone activity overlay while VoxType is recording",
-      "url": "https://github.com/agneswd/dms-voxtype-activity-overlay"
     }
   ]
 }
