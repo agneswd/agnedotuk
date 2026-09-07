@@ -17,6 +17,11 @@
       "url": "https://github.com/agneswd/Dagsverk"
     },
     {
+      "title": "osu-replay-studio",
+      "description": "Render osu! replays with skins, overlays, score animations, and thumbnails.",
+      "url": "https://github.com/agneswd/osu-replay-studio"
+    },
+    {
       "title": "dms-plugin-registry",
       "description": "Official and Third Party Plugins & Themes for DankMaterialShell",
       "url": "https://plugins.danklinux.com"
