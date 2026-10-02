@@ -95,6 +95,11 @@
       "title": "dms-clipshare",
       "description": "Dank Material Shell screen recording and sharing plugin",
       "url": "https://github.com/agneswd/dms-clipshare"
+    },
+    {
+      "title": "Stillpoint",
+      "description": "An offline Android focus and screen-time app.",
+      "url": "https://github.com/agneswd/Stillpoint"
     }
   ]
 }
