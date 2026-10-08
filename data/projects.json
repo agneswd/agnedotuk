@@ -27,6 +27,14 @@
       ]
     },
     {
+      "title": "Ronumi",
+      "description": "An offline Android focus and screen-time app.",
+      "url": "https://ronumi.agne.uk",
+      "languages": [
+        "Kotlin"
+      ]
+    },
+    {
       "title": "dms-ai-quotas",
       "description": "Codex, OpenCode, Antigravity, DeepSeek, and SuperGrok plan quotas for DankMaterialShell",
       "url": "https://github.com/agneswd/dms-ai-quotas",
@@ -46,11 +54,6 @@
     }
   ],
   "repositories": [
-    {
-      "title": "Stillpoint",
-      "description": "An offline Android focus and screen-time app.",
-      "url": "https://github.com/agneswd/Stillpoint"
-    },
     {
       "title": "dms-plugin-registry",
       "description": "Official and Third Party Plugins & Themes for DankMaterialShell",
@@ -100,6 +103,16 @@
       "title": "dms-clipshare",
       "description": "Dank Material Shell screen recording and sharing plugin",
       "url": "https://github.com/agneswd/dms-clipshare"
+    },
+    {
+      "title": "agne.uk",
+      "description": "agne.uk: Agne Studio",
+      "url": "https://agne.uk"
+    },
+    {
+      "title": "Stillpoint",
+      "description": "Stillpoint is now Ronumi: github.com/agneswd/Ronumi",
+      "url": "https://github.com/agneswd/Stillpoint"
     }
   ]
 }
