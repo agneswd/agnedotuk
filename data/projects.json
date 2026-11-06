@@ -55,6 +55,11 @@
   ],
   "repositories": [
     {
+      "title": "cordial",
+      "description": "Open-source Roblox runtime for Linux. Cordial runs the Roblox client natively, no Wine, no Android emulator. Multi-instance launcher, customizable, GPL-3.0 and fully auditable. A direct alternative to Sober.",
+      "url": "https://luohoa97.github.io/cordial/"
+    },
+    {
       "title": "dms-plugin-registry",
       "description": "Official and Third Party Plugins & Themes for DankMaterialShell",
       "url": "https://plugins.danklinux.com"
